@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Many Happy Returns</title>
+<style>
+  :root{
+    --paper:#E6E6E1;
+    --panel:#FBFBF9;
+    --card:#FFFFFF;
+    --ink:#1B1B1F;
+    --ink-soft:#65656E;
+    --rule:#D7D7D0;
+    --pen:#20243F;
+    --fold:rgba(27,27,31,.13);
+    --on-accent:#FFFFFF;
+    --a1:#FF2F7E; --a2:#2B44DE; --a3:#FFC629;
+    --shadow:0 1px 0 rgba(27,27,31,.05), 0 18px 40px -24px rgba(27,27,31,.4);
+    --font-display:"Futura","Avenir Next","Century Gothic","Trebuchet MS","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    --font-body:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Songti SC","PingFang SC",serif;
+    --font-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  /* festival palettes — light */
+  :root[data-fest="birthday"] {--a1:#FF2F7E;--a2:#2B44DE;--a3:#FFC629}
+  :root[data-fest="xmas"]     {--a1:#C81E33;--a2:#10693F;--a3:#D9A625}
+  :root[data-fest="newyear"]  {--a1:#6D3AE0;--a2:#B98A16;--a3:#2AA5C9}
+  :root[data-fest="lunar"]    {--a1:#D81E2E;--a2:#B8860B;--a3:#2FB08C}
+  :root[data-fest="midautumn"]{--a1:#B9711A;--a2:#34357F;--a3:#37AFA4}
+  :root[data-fest="halloween"]{--a1:#DE5A0C;--a2:#6A2CB0;--a3:#5E9418}
+  .chip[data-f="birthday"] {--chipc:#E4126A}
+  .chip[data-f="xmas"]     {--chipc:#C81E33}
+  .chip[data-f="newyear"]  {--chipc:#6D3AE0}
+  .chip[data-f="lunar"]    {--chipc:#D81E2E}
+  .chip[data-f="midautumn"]{--chipc:#9A5B10}
+  .chip[data-f="halloween"]{--chipc:#B8470A}
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#131315; --panel:#1D1D21; --card:#26262B;
+      --ink:#F0EFF2; --ink-soft:#9C9CA6; --rule:#35353B;
+      --pen:#E9E8F2; --fold:rgba(0,0,0,.5);
+      --on-accent:#131315;
+      --a1:#FF6BA5; --a2:#8496FF; --a3:#FFD65E;
+      --shadow:0 1px 0 rgba(0,0,0,.3), 0 22px 46px -26px rgba(0,0,0,.9);
+    }
+    :root:not([data-theme="light"])[data-fest="birthday"] {--a1:#FF6BA5;--a2:#8496FF;--a3:#FFD65E}
+    :root:not([data-theme="light"])[data-fest="xmas"]     {--a1:#FF6F6F;--a2:#3FBF84;--a3:#F0C75E}
+    :root:not([data-theme="light"])[data-fest="newyear"]  {--a1:#AC8BFF;--a2:#F0C75E;--a3:#63C9E6}
+    :root:not([data-theme="light"])[data-fest="lunar"]    {--a1:#FF6B6B;--a2:#F3C64B;--a3:#4FCBA6}
+    :root:not([data-theme="light"])[data-fest="midautumn"]{--a1:#EFB05A;--a2:#8A8BE8;--a3:#5FC9BF}
+    :root:not([data-theme="light"])[data-fest="halloween"]{--a1:#FF8A3D;--a2:#B183F0;--a3:#A6D95A}
+    :root:not([data-theme="light"]) .chip[data-f="birthday"] {--chipc:#FF6BA5}
+    :root:not([data-theme="light"]) .chip[data-f="xmas"]     {--chipc:#FF6F6F}
+    :root:not([data-theme="light"]) .chip[data-f="newyear"]  {--chipc:#AC8BFF}
+    :root:not([data-theme="light"]) .chip[data-f="lunar"]    {--chipc:#FF6B6B}
+    :root:not([data-theme="light"]) .chip[data-f="midautumn"]{--chipc:#EFB05A}
+    :root:not([data-theme="light"]) .chip[data-f="halloween"]{--chipc:#FF8A3D}
+  }
+  :root[data-theme="dark"]{
+    --paper:#131315; --panel:#1D1D21; --card:#26262B;
+    --ink:#F0EFF2; --ink-soft:#9C9CA6; --rule:#35353B;
+    --pen:#E9E8F2; --fold:rgba(0,0,0,.5);
+    --on-accent:#131315;
+    --a1:#FF6BA5; --a2:#8496FF; --a3:#FFD65E;
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 22px 46px -26px rgba(0,0,0,.9);
+  }
+  :root[data-theme="dark"][data-fest="birthday"] {--a1:#FF6BA5;--a2:#8496FF;--a3:#FFD65E}
+  :root[data-theme="dark"][data-fest="xmas"]     {--a1:#FF6F6F;--a2:#3FBF84;--a3:#F0C75E}
+  :root[data-theme="dark"][data-fest="newyear"]  {--a1:#AC8BFF;--a2:#F0C75E;--a3:#63C9E6}
+  :root[data-theme="dark"][data-fest="lunar"]    {--a1:#FF6B6B;--a2:#F3C64B;--a3:#4FCBA6}
+  :root[data-theme="dark"][data-fest="midautumn"]{--a1:#EFB05A;--a2:#8A8BE8;--a3:#5FC9BF}
+  :root[data-theme="dark"][data-fest="halloween"]{--a1:#FF8A3D;--a2:#B183F0;--a3:#A6D95A}
+  :root[data-theme="dark"] .chip[data-f="birthday"] {--chipc:#FF6BA5}
+  :root[data-theme="dark"] .chip[data-f="xmas"]     {--chipc:#FF6F6F}
+  :root[data-theme="dark"] .chip[data-f="newyear"]  {--chipc:#AC8BFF}
+  :root[data-theme="dark"] .chip[data-f="lunar"]    {--chipc:#FF6B6B}
+  :root[data-theme="dark"] .chip[data-f="midautumn"]{--chipc:#EFB05A}
+  :root[data-theme="dark"] .chip[data-f="halloween"]{--chipc:#FF8A3D}
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--font-body);font-size:17px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1160px;margin:0 auto;padding:44px 24px 72px;display:flex;flex-direction:column;gap:34px}
+
+  /* ---- masthead ---- */
+  .mast{display:flex;flex-direction:column;gap:14px}
+  .eyebrow{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-soft);display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::after{content:"";height:1px;flex:1;background:var(--rule)}
+  .rail{display:flex;height:7px;width:100%;max-width:420px}
+  .rail span{flex:1}
+  h1{
+    font-family:var(--font-display);font-weight:700;
+    font-size:clamp(38px,7vw,68px);line-height:.95;letter-spacing:-.02em;
+    margin:0;text-wrap:balance;
+  }
+  h1 em{font-style:normal;color:var(--a1);transition:color .3s ease}
+  .dek{margin:0;max-width:54ch;color:var(--ink-soft);font-size:18px}
+
+  .cols{display:grid;gap:28px;align-items:start}
+  @media (min-width:880px){ .cols{grid-template-columns:348px minmax(0,1fr);gap:40px} }
+
+  /* ---- order slip ---- */
+  .slip{
+    background:var(--panel);border:1px solid var(--rule);border-top:4px solid var(--a2);
+    box-shadow:var(--shadow);padding:24px 22px;display:flex;flex-direction:column;gap:20px;
+    transition:border-top-color .3s ease;
+  }
+  .slip-head{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-soft);display:flex;justify-content:space-between;
+  }
+  fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+  legend{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-soft);padding:0;
+  }
+
+  /* festival chips */
+  .fests{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+  .chip{
+    display:flex;align-items:center;gap:8px;cursor:pointer;
+    border:1px solid var(--rule);padding:9px 10px;
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ink-soft);transition:border-color .15s ease,color .15s ease,background .15s ease;
+  }
+  .chip input{position:absolute;opacity:0;pointer-events:none}
+  .chip .dot{width:9px;height:9px;flex:none;background:var(--chipc);border-radius:50%}
+  .chip:hover{border-color:var(--chipc);color:var(--ink)}
+  .chip:has(input:checked){background:var(--chipc);border-color:var(--chipc);color:var(--on-accent)}
+  .chip:has(input:checked) .dot{background:var(--on-accent)}
+  .chip:has(input:focus-visible){outline:3px solid var(--chipc);outline-offset:2px}
+
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .field input{
+    font-family:var(--font-display);font-size:21px;color:var(--ink);
+    background:transparent;border:0;border-bottom:2px solid var(--rule);
+    padding:6px 2px;width:100%;border-radius:0;
+  }
+  .field input::placeholder{color:var(--ink-soft);opacity:.45}
+  .field input:focus{outline:none;border-bottom-color:var(--a1)}
+  .hint{font-family:var(--font-mono);font-size:11px;color:var(--a1);min-height:14px}
+
+  .tones{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule)}
+  .tones label{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    text-align:center;padding:10px 4px;cursor:pointer;color:var(--ink-soft);
+    border-right:1px solid var(--rule);transition:background .15s ease,color .15s ease;
+  }
+  .tones label:last-child{border-right:0}
+  .tones input{position:absolute;opacity:0;pointer-events:none}
+  .tones label:has(input:checked){background:var(--a3);color:#191531}
+  .tones label:has(input:focus-visible){outline:3px solid var(--a1);outline-offset:-3px}
+
+  .go{
+    font-family:var(--font-display);font-size:19px;font-weight:700;
+    background:var(--a1);color:var(--on-accent);border:0;padding:15px 18px;cursor:pointer;
+    box-shadow:4px 4px 0 var(--a2);
+    transition:transform .12s ease, box-shadow .12s ease, background .3s ease;
+  }
+  .go:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--a2)}
+  .go:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--a2)}
+  .go:focus-visible{outline:3px solid var(--a1);outline-offset:3px}
+
+  /* ---- the opened card ---- */
+  .stage{display:flex;flex-direction:column;gap:18px;min-width:0}
+  .spread{
+    position:relative;display:grid;grid-template-columns:1fr 1fr;
+    background:var(--card);border:1px solid var(--rule);
+    box-shadow:0 2px 3px rgba(0,0,0,.06), 0 34px 60px -34px rgba(0,0,0,.55);
+    transform:rotate(-.35deg);min-height:430px;
+  }
+  .leaf{
+    position:relative;padding:clamp(26px,3.6vw,44px);
+    display:flex;flex-direction:column;justify-content:center;gap:15px;min-width:0;
+  }
+  /* the crease down the middle */
+  .fold{
+    position:absolute;top:0;bottom:0;left:50%;width:30px;transform:translateX(-15px);
+    pointer-events:none;
+    background:linear-gradient(90deg,
+      transparent 0%, var(--fold) 44%, var(--fold) 50%, rgba(255,255,255,.5) 54%, transparent 100%);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .fold{background:linear-gradient(90deg,transparent,var(--fold) 46%,var(--fold) 50%,rgba(255,255,255,.06) 55%,transparent)}
+  }
+  :root[data-theme="dark"] .fold{background:linear-gradient(90deg,transparent,var(--fold) 46%,var(--fold) 50%,rgba(255,255,255,.06) 55%,transparent)}
+
+  /* left leaf: the pre-printed side */
+  .leaf-left{align-items:center;text-align:center;overflow:hidden}
+  .leaf-left::before{
+    content:"";position:absolute;top:0;left:0;width:7px;height:100%;
+    background:linear-gradient(var(--a1),var(--a3) 52%,var(--a2));
+  }
+  .leaf-left::after{
+    content:"";position:absolute;inset:auto -30px -30px auto;width:220px;height:220px;
+    background-image:radial-gradient(var(--a1) 1.6px,transparent 1.7px);background-size:9px 9px;opacity:.16;
+    -webkit-mask-image:radial-gradient(circle at 100% 100%,#000 40%,transparent 74%);
+    mask-image:radial-gradient(circle at 100% 100%,#000 40%,transparent 74%);
+  }
+  .mark{font-size:clamp(38px,6vw,54px);line-height:1;margin:0}
+  .title{
+    font-family:var(--font-display);font-weight:700;
+    font-size:clamp(27px,4vw,42px);line-height:1.02;letter-spacing:-.02em;
+    margin:0;color:var(--a1);text-wrap:balance;
+  }
+  .sub{
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--a2);margin:0;
+  }
+  .press{
+    position:absolute;left:0;right:0;bottom:16px;
+    font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--ink-soft);opacity:.7;
+  }
+
+  /* right leaf: where the message is written */
+  .leaf-right{gap:14px;color:var(--pen)}
+  .lead{
+    font-family:var(--font-display);font-weight:700;
+    font-size:clamp(19px,2.2vw,24px);line-height:1.18;letter-spacing:-.01em;
+    margin:0;text-wrap:balance;
+  }
+  .line{margin:0;font-size:clamp(16px,1.55vw,18px);line-height:1.58}
+  .sign{
+    margin:0;font-style:italic;color:var(--ink-soft);font-size:clamp(15px,1.45vw,17px);
+    padding-top:10px;border-top:1px dashed var(--rule);
+  }
+  .empty{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-soft);text-align:center;line-height:2.1;margin:auto 0;
+  }
+  .empty b{
+    display:block;font-family:var(--font-display);font-size:22px;letter-spacing:-.01em;
+    text-transform:none;color:var(--ink);font-weight:700;margin-bottom:4px;
+  }
+
+  @media (max-width:640px){
+    .spread{grid-template-columns:1fr;min-height:0}
+    .fold{top:auto;bottom:auto;left:0;right:0;width:auto;height:30px;transform:none;
+      background:linear-gradient(180deg,transparent,var(--fold) 46%,var(--fold) 50%,rgba(255,255,255,.5) 55%,transparent)}
+    .leaf-left{padding-bottom:34px;gap:10px}
+    .press{display:none}
+    .leaf-right{padding-top:32px}
+  }
+
+  .printing .title,.printing .lead,.printing .line,.printing .sign{
+    animation:misreg 560ms cubic-bezier(.2,.9,.25,1) both;
+  }
+  .printing .lead{animation-delay:60ms}
+  .printing .line{animation-delay:110ms}
+  .printing .sign{animation-delay:170ms}
+  @keyframes misreg{
+    0%{opacity:0;transform:translateX(-9px);text-shadow:7px 0 0 var(--a1),-7px 0 0 var(--a2)}
+    60%{opacity:1;text-shadow:2px 0 0 var(--a1),-2px 0 0 var(--a2)}
+    100%{opacity:1;transform:none;text-shadow:none}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .printing .title,.printing .lead,.printing .line,.printing .sign{animation:none}
+    .go{transition:none}
+  }
+
+  .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .minor{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    background:transparent;color:var(--ink);border:1px solid var(--rule);padding:11px 15px;cursor:pointer;
+    transition:border-color .15s ease,color .15s ease;
+  }
+  .minor:hover{border-color:var(--a1);color:var(--a1)}
+  .minor:focus-visible{outline:3px solid var(--a1);outline-offset:2px}
+  .minor[hidden]{display:none}
+  .status{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--a2)}
+
+  footer{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;color:var(--ink-soft);
+    border-top:1px solid var(--rule);padding-top:16px;
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <p class="eyebrow">Card dept. &middot; six occasions &middot; open all year</p>
+    <h1>Many Happy <em>Returns</em></h1>
+    <div class="rail" aria-hidden="true">
+      <span style="background:#E4126A"></span><span style="background:#C81E33"></span><span style="background:#6D3AE0"></span><span style="background:#D81E2E"></span><span style="background:#9A5B10"></span><span style="background:#B8470A"></span>
+    </div>
+    <p class="dek">Pick the occasion, give three facts about the person, and get a card message you'd actually be willing to sign your name under.</p>
+  </header>
+
+  <div class="cols">
+    <form class="slip" id="slip" novalidate>
+      <div class="slip-head"><span>Order slip</span><span id="serial">No. 001</span></div>
+
+      <fieldset>
+        <legend>Occasion</legend>
+        <div class="fests" id="fests">
+          <label class="chip" data-f="birthday"><input type="radio" name="fest" value="birthday" checked><span class="dot"></span><span>Birthday</span></label>
+          <label class="chip" data-f="xmas"><input type="radio" name="fest" value="xmas"><span class="dot"></span><span>Christmas</span></label>
+          <label class="chip" data-f="newyear"><input type="radio" name="fest" value="newyear"><span class="dot"></span><span>New Year</span></label>
+          <label class="chip" data-f="lunar"><input type="radio" name="fest" value="lunar"><span class="dot"></span><span>Lunar NY</span></label>
+          <label class="chip" data-f="midautumn"><input type="radio" name="fest" value="midautumn"><span class="dot"></span><span>Mid-Autumn</span></label>
+          <label class="chip" data-f="halloween"><input type="radio" name="fest" value="halloween"><span class="dot"></span><span>Halloween</span></label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="name">Their name</label>
+        <input id="name" name="name" type="text" placeholder="Brynn" autocomplete="off" spellcheck="false">
+      </div>
+
+      <div class="field">
+        <label for="age" id="ageLabel">Age they're turning</label>
+        <input id="age" name="age" type="number" min="1" max="130" step="1" placeholder="34" inputmode="numeric">
+      </div>
+
+      <div class="field">
+        <label for="hobby">The hobby they won't shut up about</label>
+        <input id="hobby" name="hobby" type="text" placeholder="sourdough" autocomplete="off">
+      </div>
+
+      <p class="hint" id="hint" role="alert"></p>
+
+      <fieldset>
+        <legend>Tone</legend>
+        <div class="tones">
+          <label><input type="radio" name="tone" value="sweet" checked><span>Sweet</span></label>
+          <label><input type="radio" name="tone" value="roast"><span>Roast</span></label>
+          <label><input type="radio" name="tone" value="wild"><span>Unhinged</span></label>
+        </div>
+      </fieldset>
+
+      <button class="go" type="submit">Write the card</button>
+    </form>
+
+    <section class="stage">
+      <div class="spread" id="spread">
+        <div class="leaf leaf-left">
+          <p class="mark" id="cardMark">🎂</p>
+          <p class="title" id="cardTitle">Happy Birthday</p>
+          <p class="sub" id="cardSub" hidden></p>
+          <span class="press">Many Happy Returns &middot; Card Dept.</span>
+        </div>
+        <div class="fold" aria-hidden="true"></div>
+        <div class="leaf leaf-right" id="inside" aria-live="polite">
+          <p class="empty"><b>Nothing written yet.</b>Fill in the slip, press write</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="minor" id="again" type="button" hidden>Another version</button>
+        <button class="minor" id="copy" type="button" hidden>Copy text</button>
+        <span class="status" id="status" role="status"></span>
+      </div>
+    </section>
+  </div>
+
+  <footer>Nothing is saved, sent, or remembered. Close the tab and the card is gone.</footer>
+</div>
+
+<script>
+(function(){
+
+  var FEST = {
+    birthday:  {title:"Happy Birthday",  sub:"",                     mark:"🎂", needsAge:true},
+    xmas:      {title:"Merry Christmas", sub:"",                     mark:"🎄", needsAge:false},
+    newyear:   {title:"Happy New Year",  sub:"",                     mark:"🎆", needsAge:false},
+    lunar:     {title:"新年快乐", sub:"Happy Lunar New Year", mark:"🧧", needsAge:false},
+    midautumn: {title:"中秋快乐", sub:"Happy Mid-Autumn",     mark:"🌕", needsAge:false},
+    halloween: {title:"Happy Halloween", sub:"",                     mark:"🎃", needsAge:false}
+  };
+
+  /* hobby lines are shared per tone — occasion-neutral on purpose */
+  var HOBBY = {
+    sweet:[
+      "Nobody has ever had to talk you into {hobby}, and nobody ever should.",
+      "I hope you get more {hobby} and fewer people asking why you're so into {hobby}.",
+      "Everyone should love something as much as you love {hobby}. Most people don't. That's a them problem.",
+      "If there were a trophy for {hobby}, you'd have cleared the shelf years ago.",
+      "Wishing you an empty calendar, a silent phone, and an indecent amount of {hobby}.",
+      "The world is better for the fact that you took up {hobby} and never once shut up about it.",
+      "However today goes, I hope it ends with {hobby} and something good to eat."
+    ],
+    roast:[
+      "You've done {hobby} so long it stopped being a hobby and started being a personality.",
+      "At your age, {hobby} legally counts as cardio.",
+      "Nobody has ever asked you about {hobby}, and yet.",
+      "Your gift for {hobby} is matched only by your refusal to let anyone discuss anything else.",
+      "You call {hobby} relaxing while visibly furious. We have all seen it.",
+      "If {hobby} were a job, you'd have been fired for how much of it you do.",
+      "One day the {hobby} will pay off. Today is not that day. Enjoy yourself anyway."
+    ],
+    wild:[
+      "You have logged so many hours of {hobby} that the hours have begun logging you.",
+      "Local officials remain unable to explain the {hobby}.",
+      "In an alternate timeline you never found {hobby}, and in that timeline everyone is bored.",
+      "Your commitment to {hobby} has been noted by several agencies, none of which will comment.",
+      "The {hobby} continues. It has always continued. It will continue.",
+      "Someday there will be a plaque: here stood someone who really, really liked {hobby}.",
+      "Experts agree you are now too powerful at {hobby} to be safely observed."
+    ]
+  };
+
+  var BANKS = {
+    birthday:{
+      sweet:{
+        open:[
+          "Happy birthday, {name}.",
+          "{name} — {age} today, and still the best value in the room.",
+          "To {name}, on the occasion of turning {age}:",
+          "Dear {name}, congratulations on another clean lap around the sun.",
+          "{age} looks unfairly good on you, {name}.",
+          "Happy birthday to {name}: excellent taste, one very specific interest."
+        ],
+        occ:[
+          "{age} years. Roughly {days} days. Not one of them boring.",
+          "You've been here about {hours} hours and you're still the most fun person at the table.",
+          "{age} down, and somehow the good ones are still ahead.",
+          "Anyone can turn {age}. Very few can pull it off.",
+          "{age} candles, one wish, and absolutely no pressure.",
+          "You've spent {age} years getting good at being you. It shows."
+        ],
+        close:[
+          "Eat the whole slice. You've earned the whole slice.",
+          "Blow them all out. No practice runs.",
+          "Happy birthday. Sincerely, and with only mild jealousy.",
+          "Make a wish. Make it selfish.",
+          "Here's to {next}.",
+          "Happy birthday, {name}. Don't let anyone schedule anything."
+        ]
+      },
+      roast:{
+        open:[
+          "{name} is {age} today. Hold your applause and your questions about their back.",
+          "Breaking: {name}, {age}, still doing this.",
+          "Happy birthday to {name}, who at {age} has finally reached the age they've been acting.",
+          "{name} turns {age} today — old enough to know better, young enough to do it anyway.",
+          "Dear {name}: {age}. That's it. That's the card.",
+          "{name} is {age}. In dog years, that is a very tired dog."
+        ],
+        occ:[
+          "That's about {days} days on Earth, most of them spent looking for your phone.",
+          "{age} candles is no longer a cake, it's a controlled burn.",
+          "{age}. The warranty has expired, but the parts still move.",
+          "At {age} you make a noise when you sit down, and you've made peace with it.",
+          "You're not old at {age}, you're just extremely well documented.",
+          "Turning {age} is nothing. Wait until {next}."
+        ],
+        close:[
+          "Happy birthday. I mean it, unfortunately.",
+          "Eat cake, take a nap. You've clearly earned the nap.",
+          "You're my favourite {age}-year-old. It is a small field.",
+          "Love you. Stretch first.",
+          "See you at {next}, knees permitting.",
+          "Blow out the candles. Slowly. Take breaks."
+        ]
+      },
+      wild:{
+        open:[
+          "{name}. Age {age}. Known interest: {hobby}. The file is thickening.",
+          "The prophecy mentioned a {age}-year-old and a great deal of {hobby}. It said nothing about the smugness.",
+          "ATTENTION: {name} has reached level {age}. No new abilities have unlocked.",
+          "Somewhere, a cake is being lowered into position. It is for {name}.",
+          "{name} was assembled {age} years ago from spare parts and pure nerve.",
+          "Records confirm {name} has been {age} for several hours without incident."
+        ],
+        occ:[
+          "{age} orbits. {days} sunrises. Zero regrets you'll admit to.",
+          "You have existed for roughly {hours} hours, which is more hours than anyone strictly needs.",
+          "{age} is a suspiciously reasonable number for someone with your history.",
+          "The candles number {age}. The fire marshal has been informed. The party proceeds.",
+          "At {age}, you have officially outlived every plan anyone made for you.",
+          "They said you'd never reach {age}. They were wrong, and loud, and are not invited."
+        ],
+        close:[
+          "Happy birthday. Tell no one.",
+          "Eat cake. Fear nothing. See you at {next}.",
+          "May the candles obey you.",
+          "Go outside, or don't. It's your day and the rules are suspended.",
+          "Happy birthday, {name}. The universe owes you at least one more.",
+          "This message will not self-destruct. Happy birthday."
+        ]
+      }
+    },
+
+    xmas:{
+      sweet:{
+        open:[
+          "Merry Christmas, {name}.",
+          "To {name}, at the good end of another year:",
+          "{name} — the tree is up, the kettle's on, and this one's for you.",
+          "Wishing you the warmest possible Christmas, {name}.",
+          "Merry Christmas to {name}, the reason the group chat still works."
+        ],
+        occ:[
+          "Hope your December is all lights, low expectations, and food you didn't have to cook.",
+          "May the house be warm, the guests be brief, and the leftovers be enormous.",
+          "Here's to a week of doing very little, entirely on purpose.",
+          "You've had a full year of it. Take the whole holiday. Take two.",
+          "May nothing important happen to you until January."
+        ],
+        close:[
+          "Merry Christmas. Save me the good chocolate.",
+          "Eat everything. Answer nothing.",
+          "Happy Christmas, {name}. See you on the other side of it.",
+          "Love, and an unreasonable number of biscuits.",
+          "Merry Christmas — go sit by the tree."
+        ]
+      },
+      roast:{
+        open:[
+          "Merry Christmas, {name}. You made the nice list by a rounding error.",
+          "{name}. Christmas again. Try to pace yourself this time.",
+          "It's Christmas, which means {name} is legally allowed to be this much.",
+          "Merry Christmas to {name}, who has already eaten the good chocolates.",
+          "Season's greetings, {name}. The bar was on the floor and you still tripped over it."
+        ],
+        occ:[
+          "You'll fall asleep at 4pm in a chair you don't even like. It's tradition.",
+          "Nobody wants what you wrapped. Everybody's going to say they love it.",
+          "You'll argue about a board game before dinner. You'll lose.",
+          "Try to get through the second cracker joke without adding one of your own.",
+          "The jumper is hideous. Wear it anyway. That's the whole point."
+        ],
+        close:[
+          "Merry Christmas. Don't drive after the trifle.",
+          "Happy Christmas, you menace.",
+          "Merry Christmas. Keep the receipt, I know you will.",
+          "Enjoy it. You'll be insufferable by Boxing Day.",
+          "Merry Christmas, {name}. Hide the karaoke machine."
+        ]
+      },
+      wild:{
+        open:[
+          "The lights are up. The tree is watching. Merry Christmas, {name}.",
+          "{name} has been located. Christmas may now begin.",
+          "A sleigh was heard over the district. Authorities suspect {name}.",
+          "Merry Christmas. The reindeer have been counted; one is unaccounted for.",
+          "Bulletin: {name} is festive and cannot be reasoned with."
+        ],
+        occ:[
+          "Somewhere a goose is loose. This is not a metaphor.",
+          "The tinsel has achieved sentience and it likes you.",
+          "Every carol played this month was, technically, about you.",
+          "The chimney has been cleared for landing.",
+          "December belongs to you now. Use it irresponsibly."
+        ],
+        close:[
+          "Merry Christmas. Leave out the biscuits. All of them.",
+          "Ho ho ho, and other threats.",
+          "Merry Christmas, {name}. Trust nothing that jingles.",
+          "Sleep well. Something is on the roof.",
+          "Merry Christmas — may the fairy lights all work first try."
+        ]
+      }
+    },
+
+    newyear:{
+      sweet:{
+        open:[
+          "Happy New Year, {name}.",
+          "To {name}, the first person I'd want in a new year:",
+          "{name} — clean page, same excellent you.",
+          "Happy New Year to {name}, who made the last one bearable.",
+          "Here's to the new year, {name}, and to you being in it."
+        ],
+        occ:[
+          "May this year be kinder to you than the last, and twice as interesting.",
+          "I hope it's a year of small good days rather than one big dramatic one.",
+          "New year, same hobby, better equipment. That's the wish.",
+          "Whatever you're planning, I hope it works — and I hope it lasts.",
+          "Take the year gently. It'll still get done."
+        ],
+        close:[
+          "Happy New Year. Let's do it all again.",
+          "To the next twelve months, and to your excellent company.",
+          "Happy New Year, {name}. Stay exactly like this.",
+          "See you on the other side of midnight.",
+          "Onward. Happy New Year."
+        ]
+      },
+      roast:{
+        open:[
+          "Happy New Year, {name}. New year, same you — honestly the fun part.",
+          "{name} survived another year. Barely. Loudly.",
+          "Happy New Year to {name}, whose resolutions have a proud history of lasting nine days.",
+          "A whole new year for you to be exactly like this in.",
+          "Happy New Year, {name}. The gym will see you in January and never again."
+        ],
+        occ:[
+          "Your resolution list is fiction. Beautiful, ambitious fiction.",
+          "You'll be in bed by 12:20. We both know it.",
+          "This is the year you finally sort it out. That's what you said last year.",
+          "Set the alarm for the 2nd. Nothing happens on the 1st.",
+          "New year, new excuses. Can't wait to hear them."
+        ],
+        close:[
+          "Happy New Year. Try to make it to February.",
+          "Happy New Year, {name}. Pace yourself, for everyone's sake.",
+          "See you next year, same nonsense.",
+          "Happy New Year. Drink water. I'm serious.",
+          "To another year of this. Regrettably, gladly."
+        ]
+      },
+      wild:{
+        open:[
+          "The year has turned. {name} remains.",
+          "Happy New Year. The calendar has been replaced; the plan has not.",
+          "{name} enters the new year unbeaten and unsupervised.",
+          "Midnight came and went. You're still here. Terrifying.",
+          "A new year has been issued to {name}. Warranty void."
+        ],
+        occ:[
+          "Twelve fresh months, none of them warned about you.",
+          "The old year has been sealed in a jar and buried. Don't dig.",
+          "Somewhere the clocks all agreed on something. Rare.",
+          "You'll do something enormous this year. Nobody will notice until later.",
+          "The fireworks were a distraction. You know what for."
+        ],
+        close:[
+          "Happy New Year. Tell the clock nothing.",
+          "Onward, into the unlicensed future.",
+          "Happy New Year, {name}. May the calendar fear you.",
+          "See you in the future. It starts in a minute.",
+          "New year. Same legend."
+        ]
+      }
+    },
+
+    lunar:{
+      sweet:{
+        open:[
+          "新年快乐, {name} — happy Lunar New Year.",
+          "To {name}, wishing you a bright and noisy new year:",
+          "Happy Lunar New Year, {name}. May the year come in gently and stay.",
+          "{name} — new year, new luck, same brilliant you.",
+          "Wishing you a Lunar New Year of good food and better company."
+        ],
+        occ:[
+          "May the year bring health first, fortune second, and quiet third.",
+          "Hope the reunion table is crowded and the journey home is short.",
+          "May your red envelopes be plump and your relatives be brief.",
+          "Wishing you a year where everything you start actually finishes.",
+          "May the whole year be as good as the food is this week."
+        ],
+        close:[
+          "恭喜发财 — and save me a dumpling.",
+          "Happy Lunar New Year, {name}. Eat well, sleep late.",
+          "May the year go the way its first day does.",
+          "Take the long holiday. All of it.",
+          "新年快乐. See you in the good year."
+        ]
+      },
+      roast:{
+        open:[
+          "Happy Lunar New Year, {name}. Prepare your answers; the relatives have prepared their questions.",
+          "{name}, it's Lunar New Year, so everyone gets to comment on your life again.",
+          "新年快乐, {name}. Yes, they will ask. Yes, again.",
+          "Happy Lunar New Year to {name}, who will eat their own body weight in dumplings by Thursday.",
+          "New year, and you're still the family's most interesting unsolved case."
+        ],
+        occ:[
+          "You'll say you're not hungry. You'll have four more.",
+          "Red envelope arithmetic is about to get very personal.",
+          "Somewhere an aunt is loading a question about your salary.",
+          "You will lose at cards to a nine-year-old. Accept it early.",
+          "The fireworks are loud, but not as loud as your uncle."
+        ],
+        close:[
+          "恭喜发财 — 红包拿来.",
+          "Happy Lunar New Year. Smile through it, you're doing great.",
+          "新年快乐, {name}. Answer nothing, eat everything.",
+          "May your fortune grow faster than your relatives' opinions.",
+          "Happy new year. The dumplings are the only reliable part."
+        ]
+      },
+      wild:{
+        open:[
+          "The year has changed animals. {name} has not changed at all.",
+          "新年快乐. The firecrackers were for {name}, whether or not anyone admits it.",
+          "A new zodiac year opens and {name} walks straight into it.",
+          "Happy Lunar New Year. The luck has been redistributed and you got extra.",
+          "{name} arrives in the new year entirely unsupervised."
+        ],
+        occ:[
+          "Every door in the neighbourhood is red now. Coincidence, surely.",
+          "The luck is thick this week. Move quickly.",
+          "A dragon was seen going the other way. Take the hint.",
+          "The old year has been chased off by noise. It worked. It always works.",
+          "Fortune has been pasted on the door and it is pointing at you."
+        ],
+        close:[
+          "恭喜发财. Ask the year no questions.",
+          "新年快乐, {name}. Take the luck and run.",
+          "Happy Lunar New Year. Let the noise do its work.",
+          "May the year be loud in your favour.",
+          "Go collect what's yours. Happy new year."
+        ]
+      }
+    },
+
+    midautumn:{
+      sweet:{
+        open:[
+          "中秋快乐, {name} — happy Mid-Autumn.",
+          "To {name}, under the same very good moon:",
+          "Happy Mid-Autumn, {name}. The moon's full and you're missed.",
+          "{name} — mooncakes, tea, and a clear sky. That's the whole wish.",
+          "Wishing you a soft, bright Mid-Autumn, {name}."
+        ],
+        occ:[
+          "May the people you want beside you be beside you tonight.",
+          "Wherever you are, we're looking at the same moon. That'll do.",
+          "May your mooncake be the flavour you actually like.",
+          "A full moon, a full table, and nothing scheduled tomorrow.",
+          "Hope this one is quiet, warm, and slightly too much food."
+        ],
+        close:[
+          "月圆人圆 — happy Mid-Autumn.",
+          "Look up tonight. Happy Mid-Autumn, {name}.",
+          "Save me a slice. The good one.",
+          "中秋快乐. Sit outside for a while.",
+          "Happy Mid-Autumn. Long may the sky stay clear."
+        ]
+      },
+      roast:{
+        open:[
+          "中秋快乐, {name}. You've had three mooncakes and it's noon.",
+          "Happy Mid-Autumn to {name}, who claims to like the lotus-paste ones.",
+          "{name}, the moon is full and so, shortly, are you.",
+          "Happy Mid-Autumn. Yes, everyone's photo of the moon is bad. Including yours.",
+          "Mid-Autumn again, and you still haven't returned last year's tin."
+        ],
+        occ:[
+          "Nobody likes the egg yolk. You'll take it anyway, for the story.",
+          "You'll photograph the moon eleven times and post the blurriest one.",
+          "The mooncakes will be regifted twice before anyone eats them.",
+          "You'll say you're full, then reach for the tea and another slice.",
+          "Somebody is going to bring up the rabbit story again. Let them."
+        ],
+        close:[
+          "中秋快乐. Slow down on the tin.",
+          "Happy Mid-Autumn. That's enough moon photos.",
+          "Go look at the moon. Actually look, not through your phone.",
+          "Happy Mid-Autumn, {name}. Share, for once.",
+          "月圆了 — and so are you. Happy Mid-Autumn."
+        ]
+      },
+      wild:{
+        open:[
+          "The moon is full and directly above {name}. This is not accidental.",
+          "中秋快乐. The rabbit has been informed of your arrival.",
+          "{name} stands beneath the largest moon of the year, unbothered.",
+          "A full moon, a mooncake, and one {name}. The alignment is complete.",
+          "Tonight the moon is closer. It came for {name}."
+        ],
+        occ:[
+          "Someone up there is pounding something. It's for you, probably.",
+          "The tide moved. That was you.",
+          "Every lantern in the street is a small vote in your favour.",
+          "The moon is full, which means the rules are looser tonight.",
+          "Tea has been poured somewhere in your honour without your knowledge."
+        ],
+        close:[
+          "中秋快乐. Do not look away first.",
+          "Happy Mid-Autumn. The moon knows what you did.",
+          "Go outside. Nod at the moon. It'll nod back.",
+          "月圆人圆 — and something is definitely up there.",
+          "Happy Mid-Autumn, {name}. Bring the lantern."
+        ]
+      }
+    },
+
+    halloween:{
+      sweet:{
+        open:[
+          "Happy Halloween, {name}.",
+          "To {name}, best-dressed thing on the street tonight:",
+          "{name} — sweets acquired, plans questionable. Happy Halloween.",
+          "Happy Halloween to {name}, who commits to a costume properly.",
+          "It's Halloween, {name}, and you were made for it."
+        ],
+        occ:[
+          "May your costume hold together until at least midnight.",
+          "Hope you get the good sweets and none of the fruit.",
+          "A cold night, a warm drink, and one genuinely great scare.",
+          "May every door you knock on be the generous kind.",
+          "Enjoy the one night a year when being strange is the whole point."
+        ],
+        close:[
+          "Happy Halloween. Save the good ones for later.",
+          "Stay warm out there, and happy Halloween.",
+          "Happy Halloween, {name}. Take the whole bowl.",
+          "Trick or treat — but honestly, treat.",
+          "Happy Halloween. Get home before the fog does."
+        ]
+      },
+      roast:{
+        open:[
+          "Happy Halloween, {name}. Great costume — is it a costume?",
+          "{name} on Halloween: finally dressed appropriately.",
+          "Happy Halloween to {name}, who has been planning this outfit since March.",
+          "It's Halloween and you're the scariest thing in the group chat. Congratulations.",
+          "Happy Halloween, {name}. Nobody guessed what you are. Nobody will."
+        ],
+        occ:[
+          "You'll explain the costume nine times tonight. It still won't land.",
+          "You bought sweets for the kids. The bowl is already half empty.",
+          "You'll be cold by 9pm because the coat ruins the look.",
+          "The face paint is not coming off. Not tonight. Not tomorrow.",
+          "You'll be the only adult who fully committed, and you'll love it."
+        ],
+        close:[
+          "Happy Halloween. The mask is an improvement.",
+          "Trick or treat. Mostly trick, in your case.",
+          "Happy Halloween, {name}. Don't peak before the party.",
+          "Enjoy the sugar crash. It's coming for you.",
+          "Happy Halloween. Try not to scare the neighbours again."
+        ]
+      },
+      wild:{
+        open:[
+          "The veil is thin and {name} walked straight through it.",
+          "Happy Halloween. Something knocked. It was for {name}.",
+          "{name} has been sighted after dark and is not being pursued.",
+          "The pumpkins have all turned to face {name}.",
+          "Happy Halloween. The house is haunted and it likes you."
+        ],
+        occ:[
+          "Something under the stairs has learned your name. It's friendly. Probably.",
+          "Count the candles at midnight. There will be one more.",
+          "The costume is not a costume. We all know this.",
+          "The sweets at the bottom of the bag were not put there by anyone.",
+          "The street lights flickered in order tonight. That's a message."
+        ],
+        close:[
+          "Happy Halloween. Answer the door. Or don't.",
+          "Trick or treat. Choose carefully.",
+          "Happy Halloween, {name}. Don't look behind you.",
+          "Sleep well. The pumpkin is still lit.",
+          "Happy Halloween. Something out there is on your side."
+        ]
+      }
+    }
+  };
+
+  var slip = document.getElementById('slip');
+  var spread = document.getElementById('spread');
+  var inside = document.getElementById('inside');
+  var cardMark = document.getElementById('cardMark');
+  var cardTitle = document.getElementById('cardTitle');
+  var cardSub = document.getElementById('cardSub');
+  var hint = document.getElementById('hint');
+  var statusEl = document.getElementById('status');
+  var againBtn = document.getElementById('again');
+  var copyBtn = document.getElementById('copy');
+  var serial = document.getElementById('serial');
+  var ageLabel = document.getElementById('ageLabel');
+  var ageInput = document.getElementById('age');
+  var last = {}, count = 0, currentText = '';
+
+  function festKey(){ return slip.querySelector('input[name="fest"]:checked').value; }
+  function toneKey(){ return slip.querySelector('input[name="tone"]:checked').value; }
+
+  function pick(list, slot){
+    if(!list.length) return '';
+    if(list.length < 2) return list[0];
+    var i;
+    do { i = Math.floor(Math.random() * list.length); } while(i === last[slot]);
+    last[slot] = i;
+    return list[i];
+  }
+
+  /* drop templates that need a value we don't have (e.g. age left blank) */
+  function usable(list, vars){
+    return list.filter(function(t){
+      var needs = t.match(/\{(\w+)\}/g) || [];
+      return needs.every(function(tok){ return vars[tok.slice(1,-1)] !== undefined; });
+    });
+  }
+
+  function tidyHobby(raw){
+    var h = raw.trim().replace(/[.!]+$/,'');
+    // Lower-case a plain single-cap word ("Knitting"), leave proper nouns ("Dungeons & Dragons") alone.
+    if(/^[A-Z][^A-Z]*$/.test(h)) h = h.charAt(0).toLowerCase() + h.slice(1);
+    return h;
+  }
+
+  function fill(tpl, v){
+    return tpl.replace(/\{(\w+)\}/g, function(m, k){ return v[k] !== undefined ? v[k] : m; });
+  }
+
+  function syncFestival(){
+    var f = festKey(), meta = FEST[f];
+    document.documentElement.setAttribute('data-fest', f);
+    ageLabel.textContent = meta.needsAge ? "Age they're turning" : "Their age (optional)";
+    cardMark.textContent = meta.mark;
+    cardTitle.textContent = meta.title;
+    cardSub.textContent = meta.sub;
+    cardSub.hidden = !meta.sub;
+  }
+
+  function write(){
+    var f = festKey(), tone = toneKey(), meta = FEST[f];
+    var name = document.getElementById('name').value.trim();
+    var ageRaw = ageInput.value.trim();
+    var hobbyRaw = document.getElementById('hobby').value;
+    var age = parseInt(ageRaw, 10);
+
+    if(!name) return fail('Needs a name to address.', 'name');
+    if(ageRaw && (isNaN(age) || age < 1 || age > 130)) return fail('Age should be between 1 and 130.', 'age');
+    if(meta.needsAge && !ageRaw) return fail('A birthday card needs the age.', 'age');
+    if(!hobbyRaw.trim()) return fail('Needs a hobby — that is where the jokes live.', 'hobby');
+    hint.textContent = '';
+
+    var vars = { name:name, hobby:tidyHobby(hobbyRaw) };
+    if(ageRaw && !isNaN(age)){
+      var days = Math.round(age * 365.2425);
+      vars.age = String(age);
+      vars.days = days.toLocaleString();
+      vars.hours = (days * 24).toLocaleString();
+      vars.next = String(age + 1);
+    }
+
+    var bank = BANKS[f][tone];
+    var parts = [
+      fill(pick(usable(bank.open, vars),  f+tone+'o'), vars),
+      fill(pick(usable(HOBBY[tone], vars), tone+'h'), vars),
+      fill(pick(usable(bank.occ, vars),   f+tone+'a'), vars),
+      fill(pick(usable(bank.close, vars), f+tone+'c'), vars)
+    ];
+    currentText = meta.title + (meta.sub ? ' — ' + meta.sub : '') + '\n\n' + parts.join('\n\n');
+
+    spread.classList.remove('printing');
+    void spread.offsetWidth;
+    inside.innerHTML = '';
+    var classes = ['lead','line','line','sign'];
+    parts.forEach(function(text, i){
+      var p = document.createElement('p'); p.className = classes[i]; p.textContent = text; inside.appendChild(p);
+    });
+    spread.classList.add('printing');
+
+    count++;
+    serial.textContent = 'No. ' + String(count).padStart(3, '0');
+    spread.style.transform = 'rotate(' + (count % 2 ? -0.35 : 0.35) + 'deg)';
+    againBtn.hidden = false;
+    copyBtn.hidden = false;
+    statusEl.textContent = '';
+  }
+
+  function fail(msg, focusId){
+    hint.textContent = msg;
+    document.getElementById(focusId).focus();
+  }
+
+  slip.addEventListener('submit', function(e){ e.preventDefault(); write(); });
+  againBtn.addEventListener('click', write);
+  slip.querySelectorAll('input[name="tone"]').forEach(function(r){
+    r.addEventListener('change', function(){ if(currentText) write(); });
+  });
+  slip.querySelectorAll('input[name="fest"]').forEach(function(r){
+    r.addEventListener('change', function(){ syncFestival(); if(currentText) write(); });
+  });
+
+  copyBtn.addEventListener('click', function(){
+    var done = function(){ statusEl.textContent = 'Copied'; setTimeout(function(){ statusEl.textContent = ''; }, 1800); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(currentText).then(done, fallback);
+    } else { fallback(); }
+    function fallback(){
+      var ta = document.createElement('textarea');
+      ta.value = currentText; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); }
+      catch(err){ statusEl.textContent = 'Select the text and copy it'; }
+      document.body.removeChild(ta);
+    }
+  });
+
+  syncFestival();
+})();
+</script>
+</body>
+</html>

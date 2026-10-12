@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>First to Eleven</title>
+<style>
+  :root{
+    --hall:#0A1216;
+    --hall-2:#0E1A20;
+    --line:#1B2C34;
+    --chalk:#E8EFF2;
+    --dim:#7C8F98;
+    --amber:#FFC24A;
+    --red:#E03A2F;
+    --ball:#FF8A1E;
+    --blue:#12588F;
+    --font-display:Impact,Haettenschweiler,"Arial Narrow Bold","Arial Narrow",Oswald,system-ui,sans-serif;
+    --font-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --font-ui:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:
+      radial-gradient(120% 80% at 50% 0%, #14242C 0%, var(--hall) 62%),
+      var(--hall);
+    color:var(--chalk);
+    font-family:var(--font-ui);
+    min-height:100vh;
+  }
+  .wrap{
+    max-width:1000px;margin:0 auto;padding:26px 20px 40px;
+    display:flex;flex-direction:column;align-items:center;gap:18px;
+  }
+
+  /* ---- masthead ---- */
+  .top{width:100%;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  h1{
+    font-family:var(--font-display);font-weight:400;
+    font-size:clamp(30px,5vw,46px);letter-spacing:.06em;text-transform:uppercase;
+    margin:0;line-height:.9;
+  }
+  h1 span{color:var(--amber)}
+  .tagline{
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--dim);margin:4px 0 0;
+  }
+  .settings{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .seg{display:flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+  .seg label{
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    padding:8px 11px;cursor:pointer;color:var(--dim);border-right:1px solid var(--line);
+    transition:background .15s ease,color .15s ease;
+  }
+  .seg label:last-child{border-right:0}
+  .seg input{position:absolute;opacity:0;pointer-events:none}
+  .seg label:has(input:checked){background:var(--amber);color:#0A1216}
+  .seg label:has(input:focus-visible){outline:2px solid var(--amber);outline-offset:-2px}
+  .seg label:hover{color:var(--chalk)}
+  .btn{
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    background:transparent;color:var(--dim);border:1px solid var(--line);border-radius:2px;
+    padding:8px 11px;cursor:pointer;transition:color .15s ease,border-color .15s ease;
+  }
+  .btn:hover{color:var(--chalk);border-color:var(--dim)}
+  .btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+  .btn[aria-pressed="true"]{color:var(--amber);border-color:var(--amber)}
+
+  /* ---- scoreboard ---- */
+  .board{
+    width:100%;max-width:520px;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;
+    border:1px solid var(--line);border-radius:3px;background:rgba(255,255,255,.02);
+    padding:12px 16px;
+  }
+  .side{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .side.cpu{align-items:flex-end;text-align:right}
+  .who{
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);
+    display:flex;align-items:center;gap:6px;
+  }
+  .pip{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+  .pip.on{background:var(--amber);box-shadow:0 0 8px var(--amber)}
+  .num{
+    font-family:var(--font-mono);font-size:clamp(34px,7vw,46px);font-weight:700;
+    line-height:1;font-variant-numeric:tabular-nums;
+  }
+  .num.lead{color:var(--amber)}
+  .mid{
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--dim);text-align:center;line-height:1.8;
+  }
+  .mid b{display:block;color:var(--chalk);font-size:12px;letter-spacing:.1em}
+
+  /* ---- table ---- */
+  .court{position:relative;line-height:0}
+  canvas{
+    display:block;border-radius:3px;
+    box-shadow:0 30px 70px -30px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.06);
+    height:min(66vh,660px);width:auto;max-width:100%;
+    touch-action:none;cursor:none;
+  }
+  canvas:focus{outline:2px solid var(--amber);outline-offset:4px}
+
+  /* ---- legend ---- */
+  .legend{
+    display:flex;gap:18px;flex-wrap:wrap;justify-content:center;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+  }
+  .legend kbd{
+    font-family:var(--font-mono);background:rgba(255,255,255,.06);border:1px solid var(--line);
+    border-radius:2px;padding:2px 6px;color:var(--chalk);margin-right:5px;
+  }
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>First to <span>Eleven</span></h1>
+      <p class="tagline">Best of one &middot; win by two &middot; serve changes every two points</p>
+    </div>
+    <div class="settings">
+      <div class="seg" id="diff">
+        <label><input type="radio" name="diff" value="easy"><span>Easy</span></label>
+        <label><input type="radio" name="diff" value="normal" checked><span>Normal</span></label>
+        <label><input type="radio" name="diff" value="hard"><span>Hard</span></label>
+      </div>
+      <button class="btn" id="sound" type="button" aria-pressed="true">Sound on</button>
+      <button class="btn" id="reset" type="button">New match</button>
+    </div>
+  </div>
+
+  <div class="board">
+    <div class="side you">
+      <span class="who"><span class="pip" id="pipYou"></span>You</span>
+      <span class="num" id="scoreYou">0</span>
+    </div>
+    <div class="mid"><b id="phase">Ready</b><span id="rally">Rally 0 &middot; Best 0</span></div>
+    <div class="side cpu">
+      <span class="who">Computer<span class="pip" id="pipCpu"></span></span>
+      <span class="num" id="scoreCpu">0</span>
+    </div>
+  </div>
+
+  <div class="court">
+    <canvas id="game" tabindex="0" aria-label="Table tennis court. Move your paddle with the left and right arrow keys."></canvas>
+  </div>
+
+  <p class="legend">
+    <span><kbd>&larr;</kbd><kbd>&rarr;</kbd> Move paddle</span>
+    <span><kbd>Space</kbd> Serve</span>
+    <span><kbd>P</kbd> Pause</span>
+    <span>Or drag on the table</span>
+  </p>
+  <p class="sr" id="live" role="status" aria-live="polite"></p>
+</div>
+
+<script>
+(function(){
+  var W = 380, H = 680;                 // logical court units (real table is 1.525m x 2.74m)
+  var WALL = 14;                        // surround outside the playing surface
+  var PW = 74, PH = 13, R = 7.5;        // paddle width/height, ball radius
+  var PY_YOU = H - 46, PY_CPU = 46;     // paddle centre lines
+
+  // The paddle forgives any read inside PW/2 + R = 44 units, so a smoothly varying error
+  // gives a knife-edge opponent: below 44 it never misses, above 44 it never returns.
+  // Difficulty is therefore the miss rate itself — how often it flat out shanks one —
+  // with `jitter` keeping the returns it does make from being millimetre-perfect.
+  var MISS = 56;                       // a miss clears the blade by this much
+  var LEVELS = {
+    easy:   {speed:290, miss:0.30, jitter:34, react:0.34, drift:0.30, aim:0.25},
+    normal: {speed:395, miss:0.16, jitter:26, react:0.20, drift:0.50, aim:0.60},
+    hard:   {speed:480, miss:0.07, jitter:18, react:0.10, drift:0.75, aim:1.00}
+  };
+
+  var cv = document.getElementById('game');
+  var ctx = cv.getContext('2d');
+  var el = {
+    scoreYou: document.getElementById('scoreYou'),
+    scoreCpu: document.getElementById('scoreCpu'),
+    pipYou: document.getElementById('pipYou'),
+    pipCpu: document.getElementById('pipCpu'),
+    phase: document.getElementById('phase'),
+    rally: document.getElementById('rally'),
+    live: document.getElementById('live'),
+    sound: document.getElementById('sound'),
+    reset: document.getElementById('reset')
+  };
+
+  var G = {
+    state:'ready',        // ready | play | point | over | paused
+    level:'normal',
+    you:{x:W/2, vx:0, target:W/2},
+    cpu:{x:W/2, vx:0, target:W/2, timer:0, aim:W/2, shot:-1, err:0, bias:0},
+    ball:{x:W/2, y:H/2, vx:0, vy:0, spin:0, trail:[]},
+    score:{you:0, cpu:0},
+    server:'you',
+    serveCount:0,
+    rally:0, best:0,
+    hits:0,
+    msg:'', msgSub:'',
+    flash:0,
+    winner:null,
+    sound:true
+  };
+
+  /* ---------- audio: short synthesised knocks, no assets ---------- */
+  var actx = null;
+  function beep(freq, dur, type, vol){
+    if(!G.sound) return;
+    try{
+      if(!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      if(actx.state === 'suspended') actx.resume();
+      var o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime;
+      o.type = type || 'square'; o.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(vol || 0.05, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + dur);
+    }catch(e){}
+  }
+  var sfx = {
+    paddle: function(){ beep(720, .06, 'square', .05); },
+    cpu:    function(){ beep(520, .06, 'square', .04); },
+    wall:   function(){ beep(300, .05, 'triangle', .035); },
+    point:  function(){ beep(180, .22, 'sawtooth', .05); },
+    win:    function(){ beep(660, .12, 'square', .05); setTimeout(function(){ beep(880, .2, 'square', .05); }, 130); }
+  };
+
+  /* ---------- sizing ---------- */
+  function resize(){
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+  window.addEventListener('resize', resize);
+
+  /* ---------- serving & scoring ---------- */
+  function serveSpeed(){ return 250; }
+
+  function setUp(){
+    var srv = G.server;
+    G.ball.spin = 0; G.ball.trail.length = 0; G.hits = 0; G.rally = 0;
+    G.ball.x = (srv === 'you' ? G.you.x : G.cpu.x);
+    G.ball.y = (srv === 'you' ? PY_YOU - PH/2 - R - 2 : PY_CPU + PH/2 + R + 2);
+    G.ball.vx = 0; G.ball.vy = 0;
+    G.state = 'ready';
+    G.msg = srv === 'you' ? 'Your serve' : 'Computer serves';
+    G.msgSub = srv === 'you' ? 'Space, or tap the table' : '';
+    if(srv === 'cpu') G.cpuServeIn = 0.9;
+    syncHud();
+  }
+
+  function launch(){
+    var srv = G.server, dir = srv === 'you' ? -1 : 1;
+    var ang = (Math.random() * 0.5 - 0.25);
+    var sp = serveSpeed();
+    G.ball.vx = Math.sin(ang) * sp;
+    G.ball.vy = Math.cos(ang) * sp * dir;
+    G.state = 'play';
+    G.msg = '';
+    sfx.paddle();
+    syncHud();
+  }
+
+  function point(who){
+    G.score[who]++;
+    G.best = Math.max(G.best, G.rally);
+    G.flash = who === 'you' ? 1 : -1;
+    var a = G.score.you, b = G.score.cpu;
+    // ITTF: serve alternates every 2 points, every point from 10-10
+    G.serveCount++;
+    var every = (a >= 10 && b >= 10) ? 1 : 2;
+    if(G.serveCount % every === 0) G.server = (G.server === 'you' ? 'cpu' : 'you');
+
+    if((a >= 11 || b >= 11) && Math.abs(a - b) >= 2){
+      G.winner = a > b ? 'you' : 'cpu';
+      G.state = 'over';
+      G.msg = G.winner === 'you' ? 'Game to you' : 'Game to the computer';
+      G.msgSub = a + '–' + b + ' · Space for a new match';
+      sfx.win();
+      say('Match over, ' + a + ' to ' + b + '. ' + (G.winner === 'you' ? 'You win.' : 'Computer wins.'));
+    } else {
+      G.state = 'point';
+      G.pointIn = 0.85;
+      G.msg = who === 'you' ? 'Your point' : 'Computer point';
+      G.msgSub = a + '–' + b + (isMatchPoint() ? ' · match point' : '');
+      sfx.point();
+      say(a + ' – ' + b);
+    }
+    syncHud();
+  }
+
+  function isMatchPoint(){
+    var a = G.score.you, b = G.score.cpu;
+    return (a >= 10 && a - b >= 1) || (b >= 10 && b - a >= 1);
+  }
+
+  function newMatch(){
+    G.score.you = 0; G.score.cpu = 0; G.serveCount = 0;
+    G.server = Math.random() < 0.5 ? 'you' : 'cpu';
+    G.best = 0; G.winner = null; G.flash = 0;
+    G.you.x = W/2; G.cpu.x = W/2; G.cpu.aim = W/2;
+    setUp();
+  }
+
+  function say(t){ el.live.textContent = t; }
+
+  function syncHud(){
+    el.scoreYou.textContent = G.score.you;
+    el.scoreCpu.textContent = G.score.cpu;
+    el.scoreYou.classList.toggle('lead', G.score.you > G.score.cpu);
+    el.scoreCpu.classList.toggle('lead', G.score.cpu > G.score.you);
+    el.pipYou.classList.toggle('on', G.server === 'you' && G.state !== 'over');
+    el.pipCpu.classList.toggle('on', G.server === 'cpu' && G.state !== 'over');
+    el.rally.textContent = 'Rally ' + G.rally + ' · Best ' + G.best;
+    el.phase.textContent =
+      G.state === 'over' ? (G.winner === 'you' ? 'You win' : 'CPU wins') :
+      G.state === 'paused' ? 'Paused' :
+      isMatchPoint() ? 'Match point' :
+      G.state === 'play' ? 'Rally' : 'Ready';
+  }
+
+  /* ---------- input ---------- */
+  var keys = {};
+  window.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'ArrowRight' || k === 'ArrowUp' || k === 'ArrowDown' || k === ' '){ e.preventDefault(); }
+    if(k === 'ArrowLeft' || k === 'a' || k === 'A') keys.l = true;
+    if(k === 'ArrowRight' || k === 'd' || k === 'D') keys.r = true;
+    if(k === ' '){
+      if(G.state === 'ready' && G.server === 'you') launch();
+      else if(G.state === 'over') newMatch();
+      else if(G.state === 'paused'){ G.state = G.resume; syncHud(); }
+    }
+    if(k === 'p' || k === 'P' || k === 'Escape'){
+      if(G.state === 'play' || G.state === 'ready'){ G.resume = G.state; G.state = 'paused'; }
+      else if(G.state === 'paused'){ G.state = G.resume; }
+      syncHud();
+    }
+  });
+  window.addEventListener('keyup', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'a' || k === 'A') keys.l = false;
+    if(k === 'ArrowRight' || k === 'd' || k === 'D') keys.r = false;
+  });
+  window.addEventListener('blur', function(){
+    keys.l = keys.r = false;
+    if(G.state === 'play'){ G.resume = 'play'; G.state = 'paused'; syncHud(); }
+  });
+
+  var dragging = false;
+  function pointerX(e){
+    var r = cv.getBoundingClientRect();
+    return (e.clientX - r.left) / r.width * W;
+  }
+  cv.addEventListener('pointerdown', function(e){
+    cv.setPointerCapture(e.pointerId); dragging = true;
+    G.you.target = pointerX(e);
+    if(G.state === 'ready' && G.server === 'you') launch();
+    else if(G.state === 'over') newMatch();
+    else if(G.state === 'paused'){ G.state = G.resume; syncHud(); }
+  });
+  cv.addEventListener('pointermove', function(e){ if(dragging) G.you.target = pointerX(e); });
+  cv.addEventListener('pointerup', function(){ dragging = false; });
+  cv.addEventListener('pointercancel', function(){ dragging = false; });
+
+  document.getElementById('diff').addEventListener('change', function(e){
+    G.level = e.target.value; cv.focus();
+  });
+  el.sound.addEventListener('click', function(){
+    G.sound = !G.sound;
+    el.sound.setAttribute('aria-pressed', String(G.sound));
+    el.sound.textContent = G.sound ? 'Sound on' : 'Sound off';
+    if(G.sound) beep(660, .05, 'square', .04);
+  });
+  el.reset.addEventListener('click', function(){ newMatch(); cv.focus(); });
+
+  /* ---------- ai ---------- */
+  function predictX(){
+    var b = G.ball;
+    if(b.vy >= 0) return W/2;                       // ball heading away — wait near middle
+    var t = (PY_CPU + PH/2 + R - b.y) / b.vy;
+    var x = b.x + b.vx * t + b.spin * t * t * 22;   // rough allowance for curve
+    var span = W - 2*(WALL + R), lo = WALL + R;
+    x = x - lo;
+    var m = ((x % (2*span)) + 2*span) % (2*span);   // unfold the wall bounces
+    return lo + (m > span ? 2*span - m : m);
+  }
+
+  function ai(dt){
+    var L = LEVELS[G.level], c = G.cpu;
+
+    // One read per shot. Re-rolling the error every frame would average it away
+    // and make the computer unbeatable, so it commits when the ball is struck.
+    if(c.shot !== G.hits){
+      c.shot = G.hits;
+      var pace = 1 + Math.hypot(G.ball.vx, G.ball.vy) / 1600;   // fast balls are harder to handle
+      if(Math.random() < Math.min(0.6, L.miss * pace)){
+        c.err = (MISS + Math.random() * 34) * (Math.random() < 0.5 ? -1 : 1);   // shanked
+        c.bias = 0;
+      } else {
+        c.err = (Math.random() * 2 - 1) * L.jitter;                             // a return, not a clone
+        // Reads it well enough to take the ball off one side of the blade and angle
+        // the return away from where you're standing.
+        c.bias = (G.you.x < W/2 ? -1 : 1) * PW * 0.30 * L.aim;
+      }
+      c.timer = L.react;                                        // reaction delay before it tracks
+    }
+
+    c.timer -= dt;
+    if(c.timer <= 0){
+      c.timer = 0.05;
+      var aim = G.ball.vy < 0 ? predictX() + c.err + c.bias
+                              : W/2 + (G.ball.x - W/2) * L.drift;
+      c.aim = Math.max(WALL + PW/2, Math.min(W - WALL - PW/2, aim));
+    }
+    var d = c.aim - c.x;
+    var step = L.speed * dt;
+    var move = Math.abs(d) < step ? d : (d > 0 ? step : -step);
+    c.vx = move / dt;
+    c.x += move;
+  }
+
+  /* ---------- step ---------- */
+  function collide(p, py, from, onHit){
+    var b = G.ball;
+    var near = from < 0 ? b.y - R <= py + PH/2 && b.y + R >= py - PH/2
+                        : b.y + R >= py - PH/2 && b.y - R <= py + PH/2;
+    if(!near) return false;
+    if(Math.abs(b.x - p.x) > PW/2 + R) return false;
+    var off = Math.max(-1, Math.min(1, (b.x - p.x) / (PW/2)));
+    var sp = Math.min(Math.hypot(b.vx, b.vy) * 1.055, 640);
+    var ang = off * 0.85;                            // where it lands on the blade sets the angle
+    b.vx = Math.sin(ang) * sp + p.vx * 0.28;
+    b.vy = Math.cos(ang) * sp * (from < 0 ? 1 : -1);
+    b.y = from < 0 ? py + PH/2 + R + .5 : py - PH/2 - R - .5;
+    b.spin = Math.max(-1.6, Math.min(1.6, b.spin * 0.4 + p.vx * 0.0045));
+    G.hits++; G.rally++;
+    onHit();
+    return true;
+  }
+
+  function step(dt){
+    // player paddle
+    var acc = 0;
+    if(keys.l) acc -= 1;
+    if(keys.r) acc += 1;
+    var speed = 430;
+    var prev = G.you.x;
+    if(acc !== 0){
+      G.you.x += acc * speed * dt;
+      G.you.target = G.you.x;
+    } else if(dragging){
+      G.you.x += (G.you.target - G.you.x) * Math.min(1, dt * 18);
+    }
+    G.you.x = Math.max(WALL + PW/2, Math.min(W - WALL - PW/2, G.you.x));
+    G.you.vx = (G.you.x - prev) / dt;
+
+    if(G.state === 'ready'){
+      ai(dt);
+      var b0 = G.ball;
+      if(G.server === 'you'){ b0.x = G.you.x; b0.y = PY_YOU - PH/2 - R - 2; }
+      else {
+        b0.x = G.cpu.x; b0.y = PY_CPU + PH/2 + R + 2;
+        G.cpuServeIn -= dt;
+        if(G.cpuServeIn <= 0) launch();
+      }
+      return;
+    }
+    if(G.state === 'point'){
+      ai(dt);
+      G.pointIn -= dt;
+      if(G.pointIn <= 0) setUp();
+      return;
+    }
+    if(G.state !== 'play') return;
+
+    ai(dt);
+
+    var b = G.ball;
+    b.spin *= (1 - dt * 0.5);
+    b.vx += b.spin * 130 * dt;                       // sidespin curls the flight
+    b.x += b.vx * dt;
+    b.y += b.vy * dt;
+
+    b.trail.push({x:b.x, y:b.y});
+    if(b.trail.length > 12) b.trail.shift();
+
+    if(b.x - R < WALL){ b.x = WALL + R; b.vx = Math.abs(b.vx); b.spin *= -0.4; sfx.wall(); }
+    if(b.x + R > W - WALL){ b.x = W - WALL - R; b.vx = -Math.abs(b.vx); b.spin *= -0.4; sfx.wall(); }
+
+    if(b.vy > 0) collide(G.you, PY_YOU, 1, sfx.paddle);
+    else collide(G.cpu, PY_CPU, -1, sfx.cpu);
+
+    if(b.y - R > H) point('cpu');
+    else if(b.y + R < 0) point('you');
+
+    if(G.flash) G.flash *= 0.9;
+  }
+
+  /* ---------- draw ---------- */
+  function roundRect(x, y, w, h, r){
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function drawTable(){
+    // floor surround
+    ctx.fillStyle = '#0B1519';
+    ctx.fillRect(0, 0, W, H);
+    // playing surface
+    var g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#0F4E80');
+    g.addColorStop(.5, '#12588F');
+    g.addColorStop(1, '#0F4E80');
+    ctx.fillStyle = g;
+    ctx.fillRect(WALL, 0, W - WALL*2, H);
+    // white boundary lines
+    ctx.strokeStyle = 'rgba(240,246,248,.85)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(WALL + 1.5, 1.5, W - WALL*2 - 3, H - 3);
+    // centre line (doubles)
+    ctx.strokeStyle = 'rgba(240,246,248,.42)';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(W/2, 4); ctx.lineTo(W/2, H - 4); ctx.stroke();
+
+    // net across the middle
+    var ny = H/2, nh = 15;
+    ctx.fillStyle = 'rgba(8,16,20,.45)';
+    ctx.fillRect(WALL - 5, ny - nh/2, W - WALL*2 + 10, nh);
+    ctx.strokeStyle = 'rgba(232,239,242,.22)';
+    ctx.lineWidth = 1;
+    for(var x = WALL - 4; x < W - WALL + 4; x += 5){
+      ctx.beginPath(); ctx.moveTo(x, ny - nh/2); ctx.lineTo(x, ny + nh/2); ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(240,246,248,.92)';
+    ctx.fillRect(WALL - 5, ny - nh/2 - 2.5, W - WALL*2 + 10, 2.5);
+    ctx.fillStyle = 'rgba(240,246,248,.35)';
+    ctx.fillRect(WALL - 5, ny + nh/2, W - WALL*2 + 10, 1.5);
+  }
+
+  function drawPaddle(p, py, top){
+    var x = p.x - PW/2, y = py - PH/2;
+    // handle
+    ctx.fillStyle = '#C79055';
+    var hx = p.x - 7, hy = top ? y - 13 : y + PH;
+    ctx.fillRect(hx, hy, 14, 13);
+    // blade
+    ctx.fillStyle = 'rgba(0,0,0,.35)';
+    roundRect(x, y + 3, PW, PH, 6); ctx.fill();
+    ctx.fillStyle = top ? '#23282E' : '#E03A2F';
+    roundRect(x, y, PW, PH, 6); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.16)';
+    roundRect(x + 4, y + 2, PW - 8, 3, 2); ctx.fill();
+  }
+
+  function drawBall(){
+    var b = G.ball;
+    for(var i = 0; i < b.trail.length; i++){
+      var t = b.trail[i], a = (i / b.trail.length) * 0.28;
+      ctx.fillStyle = 'rgba(255,138,30,' + a + ')';
+      ctx.beginPath(); ctx.arc(t.x, t.y, R * (0.35 + i / b.trail.length * 0.6), 0, 7); ctx.fill();
+    }
+    // shadow on the table
+    ctx.fillStyle = 'rgba(4,12,18,.4)';
+    ctx.beginPath(); ctx.ellipse(b.x + 4, b.y + 7, R * 1.05, R * 0.55, 0, 0, 7); ctx.fill();
+    // ball
+    var g = ctx.createRadialGradient(b.x - 2.5, b.y - 3, 1, b.x, b.y, R);
+    g.addColorStop(0, '#FFD79B'); g.addColorStop(.55, '#FF8A1E'); g.addColorStop(1, '#D96A0C');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(b.x, b.y, R, 0, 7); ctx.fill();
+  }
+
+  function drawOverlay(){
+    if(!G.msg && G.state !== 'paused') return;
+    var msg = G.state === 'paused' ? 'Paused' : G.msg;
+    var sub = G.state === 'paused' ? 'Space or P to resume' : G.msgSub;
+    ctx.fillStyle = 'rgba(6,12,16,.62)';
+    ctx.fillRect(0, H/2 - 62, W, 124);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#E8EFF2';
+    ctx.font = '700 27px ' + 'ui-monospace, Menlo, Consolas, monospace';
+    ctx.fillText(msg, W/2, H/2 - 6);
+    if(sub){
+      ctx.fillStyle = 'rgba(232,239,242,.6)';
+      ctx.font = '11px ui-monospace, Menlo, Consolas, monospace';
+      ctx.fillText(sub.toUpperCase(), W/2, H/2 + 22);
+    }
+  }
+
+  function draw(){
+    drawTable();
+    if(G.flash){
+      ctx.fillStyle = G.flash > 0 ? 'rgba(255,194,74,' + Math.abs(G.flash) * .18 + ')'
+                                  : 'rgba(224,58,47,' + Math.abs(G.flash) * .18 + ')';
+      ctx.fillRect(WALL, 0, W - WALL*2, H);
+    }
+    drawPaddle(G.cpu, PY_CPU, true);
+    drawPaddle(G.you, PY_YOU, false);
+    if(G.state !== 'over') drawBall();
+    drawOverlay();
+  }
+
+  /* ---------- loop ---------- */
+  var lastT = 0, hudT = 0;
+  function frame(t){
+    if(!lastT) lastT = t;
+    var dt = Math.min((t - lastT) / 1000, 1/30);
+    lastT = t;
+    step(dt);
+    draw();
+    hudT += dt;
+    if(hudT > 0.1){ hudT = 0; syncHud(); }
+    requestAnimationFrame(frame);
+  }
+
+  resize();
+  newMatch();
+  cv.focus();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
